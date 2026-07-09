@@ -1,0 +1,115 @@
+/* ── Polish layer v2 — 質感拉皮（可整檔移除還原）──
+ * 原則：transform / opacity / box-shadow 為主（GPU 友善），無無限迴圈動畫；
+ * tokens.css 的 prefers-reduced-motion 保護涵蓋本檔所有動效。
+ */
+
+/* ═══ 動效 ═══ */
+
+/* 1. 卡片入場：上浮淡入＋前 5 張輕微 stagger（視圖切換觸發） */
+@keyframes polish-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+.screen .card { animation: polish-rise 300ms cubic-bezier(0.16, 0.84, 0.3, 1) both; }
+.screen .card:nth-child(2) { animation-delay: 40ms; }
+.screen .card:nth-child(3) { animation-delay: 80ms; }
+.screen .card:nth-child(4) { animation-delay: 120ms; }
+.screen .card:nth-child(5) { animation-delay: 160ms; }
+/* 表格內與選單卡片不做入場動畫 */
+.screen .tbl .card { animation: none; }
+
+/* 2. 抽屜滑入：距離加大、帶陰影浮現 */
+@keyframes polish-slide-left {
+  from { opacity: 0; transform: translateX(48px); }
+  to   { opacity: 1; transform: none; }
+}
+.screen .cust-drawer { animation: polish-slide-left 300ms cubic-bezier(0.16, 0.84, 0.3, 1) both; }
+
+/* 3. Modal：遮罩淡入（含輕微模糊）＋卡片明顯彈入 */
+@keyframes polish-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes polish-pop {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+.screen .modal-overlay {
+  animation: polish-fade 200ms ease both;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+.screen .modal-overlay > .card { animation: polish-pop 300ms cubic-bezier(0.16, 0.84, 0.3, 1) both; }
+
+/* 4. 按鈕：hover 浮起更明顯、按下回彈 */
+.screen .btn {
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease,
+              transform 180ms cubic-bezier(0.16, 0.84, 0.3, 1), box-shadow 180ms ease;
+}
+.screen .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.screen .btn:active { transform: translateY(0) scale(0.97); box-shadow: none; transition-duration: 60ms; }
+.screen .btn.primary { box-shadow: 0 1px 3px rgba(20,20,20,0.14); }
+.screen .btn.primary:hover { box-shadow: 0 6px 16px rgba(47,111,179,0.32); }
+.screen .btn.ghost:hover { transform: none; box-shadow: none; }
+.screen .btn.icon:hover { transform: none; box-shadow: none; }
+
+/* 5. KPI 卡：hover 浮起＋頂部 accent 線掃入 */
+.screen .kpi-card { position: relative; overflow: hidden; transition: transform 200ms cubic-bezier(0.16, 0.84, 0.3, 1), box-shadow 200ms ease; }
+.screen .kpi-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent), oklch(72% 0.09 240));
+  transform: scaleX(0); transform-origin: left; transition: transform 260ms cubic-bezier(0.16, 0.84, 0.3, 1);
+}
+.screen .kpi-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.screen .kpi-card:hover::before { transform: scaleX(1); }
+
+/* 6. 表格列 hover：左側 accent 線掃入＋列輕微提亮 */
+.screen .tbl tbody tr td { transition: background 140ms ease; }
+.screen .tbl tbody tr td:first-child { box-shadow: inset 0 0 0 0 var(--accent); transition: box-shadow 200ms cubic-bezier(0.16, 0.84, 0.3, 1), background 140ms ease; }
+.screen .tbl tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 0 var(--accent); }
+
+/* 7. Toast：滑升＋回彈 */
+@keyframes polish-toast {
+  0%   { opacity: 0; transform: translate(-50%, 16px) scale(0.97); }
+  70%  { opacity: 1; transform: translate(-50%, -2px) scale(1); }
+  100% { opacity: 1; transform: translate(-50%, 0); }
+}
+.screen .toast-pop { animation: polish-toast 320ms cubic-bezier(0.16, 0.84, 0.3, 1) both; }
+
+/* 8. 分頁／側欄／chip／input 過場 */
+.screen .topbar-tabs button, .screen .klass-tabs button {
+  transition: color 150ms ease, border-color 200ms cubic-bezier(0.16, 0.84, 0.3, 1), background 150ms ease;
+}
+.screen aside button { transition: background 150ms ease, color 150ms ease, transform 150ms ease; }
+.screen aside nav button:hover { transform: translateX(2px); }
+.screen .chip { transition: background 150ms ease, color 150ms ease, border-color 150ms ease, transform 150ms ease; }
+.screen .input { transition: border-color 150ms ease, box-shadow 200ms ease; }
+.screen .input:focus { box-shadow: 0 0 0 4px var(--accent-subtle), 0 1px 2px rgba(20,20,20,0.06); }
+
+/* ═══ 視覺設計加料 ═══ */
+
+/* 9. 主內容區：極淡的頂部光暈漸層，畫面不再死平 */
+.screen main {
+  background:
+    radial-gradient(1200px 300px at 30% -80px, rgba(47,111,179,0.05), transparent 70%),
+    var(--bg);
+}
+
+/* 10. 側欄：分隔線改漸層、底部使用者區浮起感 */
+.screen .app-sidebar {
+  background: linear-gradient(180deg, var(--bg-elev) 0%, var(--bg-subtle) 100%);
+  box-shadow: inset -1px 0 0 var(--border);
+}
+
+/* 11. 卡片：hover 邊框微亮（列表卡、圖表卡通用的細質感） */
+.screen .card { transition: border-color 200ms ease, box-shadow 200ms ease; }
+
+/* 12. 表頭：輕微毛玻璃，捲動時內容從下方滑過的層次感 */
+.screen .tbl th {
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* 13. 捲軸 hover 加深 */
+.screen .thin-scroll::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* 14. 選取文字用品牌色 */
+.screen ::selection { background: var(--accent-subtle); color: var(--accent-text); }
