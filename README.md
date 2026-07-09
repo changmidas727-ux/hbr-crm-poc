@@ -1,5 +1,6 @@
 # HBR 課務 CRM — 前端原型（POC）Claude design& Claude Code協作
 使用模型：
+
 架構規劃：Fable5
 程式設計：Opus 4.8
 實作:Sonnet
