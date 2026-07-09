@@ -1,9 +1,9 @@
 # HBR 課務 CRM — 前端原型（POC）Claude design& Claude Code協作
-使用模型：
+使用模型
 
 架構規劃：Fable5
 程式設計：Opus 4.8
-實作:Sonnet
+實作：Sonnet
 
 純前端 React 原型，展示課程管理、期數成效、潛客管理、客戶管理、帳號權限等六大模組。**無後端、無 build 流程**：瀏覽器直接以 [Babel standalone](https://babeljs.io/docs/babel-standalone) 即時編譯 `app/*.jsx` 並執行，資料全存於瀏覽器 `localStorage`（皆為 mock 假資料）。
 
